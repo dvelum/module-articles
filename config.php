@@ -2,7 +2,7 @@
 return [
     'id' => 'dvelum_articles',
     'version' => '1.0.6',
-    'author' => 'Kirill Egorov',
+    'author' => 'Kirill Yegorov',
     'name' => 'DVelum Articles',
     'configs' => './configs',
     'locales' => './locales',
