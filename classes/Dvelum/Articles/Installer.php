@@ -1,15 +1,24 @@
 <?php
-class Dvelum_Backend_Articles_Installer extends Externals_Installer
+namespace Dvelum\Articles;
+
+use Dvelum\Config;
+use Dvelum\Config\ConfigInterface;
+use Dvelum\App\Session\User;
+use Dvelum\Orm\Model;
+use Dvelum\Lang;
+use Dvelum\Orm\Object;
+
+class Installer extends \Externals_Installer
 {
     /**
      * Install
-     * @param Config_Abstract $applicationConfig
-     * @param Config_Abstract $moduleConfig
+     * @param ConfigInterface $applicationConfig
+     * @param ConfigInterface $moduleConfig
      * @return boolean
      */
-    public function install(Config_Abstract $applicationConfig, Config_Abstract $moduleConfig)
+    public function install(ConfigInterface $applicationConfig, ConfigInterface $moduleConfig)
     {
-        Lang::addDictionaryLoader('dvelum_articles', $applicationConfig->get('language').'/dvelum_articles.php', Config::File_Array);
+        Lang::addDictionaryLoader('dvelum_articles', $applicationConfig->get('language').'/dvelum_articles.php', Config\Factory::File_Array);
 
         // Add article pages and blocks
         if(!$this->addPages() || !$this->addBlocks()){
@@ -18,6 +27,9 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
 
         // Add permissions
         $userInfo = User::getInstance()->getInfo();
+        /**
+         * @var \Model_Permissions $permissionsModel
+         */
         $permissionsModel = Model::factory('Permissions');
         if(!$permissionsModel->setGroupPermissions($userInfo['group_id'], 'Dvelum_Articles' , 1 , 1 , 1 , 1)){
             return false;
@@ -33,9 +45,44 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
     }
 
     /**
+     * Uninstall
+     * @param ConfigInterface $applicationConfig
+     * @param ConfigInterface $moduleConfig
+     * @return boolean
+     */
+    public function uninstall(ConfigInterface $applicationConfig, ConfigInterface $moduleConfig)
+    {
+        $pagesModel = Model::factory('Page');
+        $pageItems = $pagesModel->query()->filters(['func_code' => 'dvelum_articles'])->fetchAll();
+
+        foreach($pageItems as $item)
+        {
+            try{
+                $page = Object::factory('Page', $item['id']);
+                $page->unpublish();
+            }catch (\Exception $e){
+                $this->errors[] = $e->getMessage();
+                return false;
+            }
+        }
+
+        $pageItems = $pagesModel->query()->filters(['func_code' => 'dvelum_articles_item'])->fetchAll();
+        foreach($pageItems as $item)
+        {
+            try{
+                $page = Object::factory('Page', $item['id']);
+                $page->unpublish();
+            }catch (\Exception $e){
+                $this->errors[] = $e->getMessage();
+                return false;
+            }
+        }
+    }
+
+    /**
      * Add article pages
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      */
     protected function addPages()
     {
@@ -43,13 +90,13 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
         $lang = Lang::lang('dvelum_articles');
 
         $pagesModel = Model::factory('Page');
-        $pageItem = $pagesModel->getList(false,['func_code' => 'dvelum_articles']);
+        $pageItem = $pagesModel->query()->filters(['func_code' => 'dvelum_articles'])->fetchAll();
 
         if(empty($pageItem))
         {
             try{
-                $articlesPage = new Db_Object('Page');
-                $articlesPage->setValues(array(
+                $articlesPage = Object::factory('Page');
+                $articlesPage->setValues([
                     'code'=>'articles',
                     'is_fixed'=>1,
                     'html_title'=>$lang->get('articles'),
@@ -73,15 +120,15 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
                     'date_published'=>date('Y-m-d H:i:s'),
                     'in_site_map'=>true,
                     'default_blocks'=>true
-                ));
+                ]);
 
                 if(!$articlesPage->saveVersion(true, false))
-                    throw new Exception('Cannot create articles page');
+                    throw new \Exception('Cannot create articles page');
 
                 if(!$articlesPage->publish())
-                    throw new Exception('Cannot publish articles page');
+                    throw new \Exception('Cannot publish articles page');
 
-            }catch (Exception $e){
+            }catch (\Exception $e){
                 $this->errors[] = $e->getMessage();
                 return false;
             }
@@ -91,11 +138,11 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
             $articlesPageId = $articlesPageItem['id'];
         }
 
-        $pageItem = $pagesModel->getList(false,['func_code' => 'dvelum_articles_item']);
+        $pageItem = $pagesModel->query()->filters(['func_code' => 'dvelum_articles_item'])->fetchAll();
         if(empty($pageItem))
         {
             try{
-                $page = new Db_Object('Page');
+                $page = Object::factory('Page');
                 $page->setValues(array(
                     'code'=>'article',
                     'is_fixed'=>1,
@@ -123,12 +170,12 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
                 ));
 
                 if(!$page->saveVersion(true, false))
-                    throw new Exception('Cannot create article page');
+                    throw new \Exception('Cannot create article page');
 
                 if(!$page->publish())
-                    throw new Exception('Cannot publish article page');
+                    throw new \Exception('Cannot publish article page');
 
-            }catch (Exception $e){
+            }catch (\Exception $e){
                 $this->errors[] = $e->getMessage();
                 return false;
             }
@@ -144,22 +191,22 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
         $lang = Lang::lang('dvelum_articles');
         $categoryModel = Model::factory('Dvelum_Article_Category');
 
-        if($categoryModel->getCount(['url'=>'test_category']))
+        if($categoryModel->query()->filters(['url'=>'test_category'])->getCount())
             return true;
 
         try{
-            $category = Db_Object::factory('Dvelum_Article_Category');
+            $category = Object::factory('Dvelum_Article_Category');
             $category->setValues([
                 'url' => 'test_category',
                 'title' => $lang->get('test_category')
             ]);
             if(!$category->saveVersion(true, false))
-                throw new Exception('Cannot add test category');
+                throw new \Exception('Cannot add test category');
 
             if(!$category->publish())
-                throw new Exception('Cannot publish test category');
+                throw new \Exception('Cannot publish test category');
 
-        }catch (Exception $e){
+        }catch (\Exception $e){
             $this->errors[] = $e->getMessage();
             return false;
         }
@@ -172,15 +219,16 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
     protected function addArticle()
     {
         $lang = Lang::lang('dvelum_articles');
+
         $articleModel = Model::factory('Dvelum_Article');
         $categoryModel = Model::factory('Dvelum_Article_Category');
         $catInfo = $categoryModel->getItemByUniqueField('url','test_category');
 
-        if($articleModel->getCount(['url'=>'test_article']))
+        if($articleModel->query()->filters(['url'=>'test_article'])->getCount())
             return true;
 
         try{
-            $article = Db_Object::factory('Dvelum_Article');
+            $article = Object::factory('Dvelum_Article');
             $article->setValues([
                 'url' => 'test_category',
                 'title' => $lang->get('test_article'),
@@ -189,14 +237,11 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
                 'main_category' => $catInfo['id'],
                 'text' => $lang->get('test_article').'...'
             ]);
-
             if(!$article->saveVersion(true, false))
-                throw new Exception('Cannot add test article');
-
+                throw new \Exception('Cannot add test article');
             if(!$article->publish())
-                throw new Exception('Cannot publish test article');
-
-        }catch (Exception $e){
+                throw new \Exception('Cannot publish test article');
+        }catch (\Exception $e){
             $this->errors[] = $e->getMessage();
             return false;
         }
@@ -208,13 +253,13 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
      */
     protected function addBlocks()
     {
-        $articleBlock = Model::factory('Blocks')->getCount(['sys_name' => 'Block_Dvelum_Articles']);
+        $articleBlock = Model::factory('Blocks')->query()->filters(['sys_name' => 'Block_Dvelum_Articles'])->getCount();
 
         if($articleBlock)
             return true;
 
         try{
-            $articleBlock = Db_Object::factory('Blocks');
+            $articleBlock = Object::factory('Blocks');
             $articleBlock->setValues([
                 'is_menu' => false,
                 'is_system' => true,
@@ -224,50 +269,15 @@ class Dvelum_Backend_Articles_Installer extends Externals_Installer
             ]);
 
             if(!$articleBlock->saveVersion(true, false))
-                throw new Exception('Cannot create article block');
+                throw new \Exception('Cannot create article block');
 
             if(!$articleBlock->publish())
-                throw new Exception('Cannot publish article block');
+                throw new \Exception('Cannot publish article block');
 
-        }catch (Exception $e){
+        }catch (\Exception $e){
             $this->errors[] = $e->getMessage();
             return false;
         }
         return true;
-    }
-
-    /**
-     * Uninstall
-     * @param Config_Abstract $applicationConfig
-     * @param Config_Abstract $moduleConfig
-     * @return boolean
-     */
-    public function uninstall(Config_Abstract $applicationConfig, Config_Abstract $moduleConfig)
-    {
-        $pagesModel = Model::factory('Page');
-        $pageItems = $pagesModel->getList(false,['func_code' => 'dvelum_articles']);
-
-        foreach($pageItems as $item)
-        {
-            try{
-                $page = Db_Object::factory('Page', $item['id']);
-                $page->unpublish();
-            }catch (Exception $e){
-                $this->errors[] = $e->getMessage();
-                return false;
-            }
-        }
-
-        $pageItems = $pagesModel->getList(false,['func_code' => 'dvelum_articles_item']);
-        foreach($pageItems as $item)
-        {
-            try{
-                $page = Db_Object::factory('Page', $item['id']);
-                $page->unpublish();
-            }catch (Exception $e){
-                $this->errors[] = $e->getMessage();
-                return false;
-            }
-        }
     }
 }

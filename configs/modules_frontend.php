@@ -2,11 +2,11 @@
     'dvelum_articles_item' =>
         array (
             'code' => 'dvelum_articles_item',
-            'class' => 'Dvelum_Frontend_Articles_Item_Controller'
+            'class' => '\\Dvelum\\App\\Frontend\\Articles\\Item\\Controller'
         ),
     'dvelum_articles' =>
         array (
             'code' => 'dvelum_articles',
-            'class' => 'Dvelum_Frontend_Articles_Controller'
+            'class' => '\\Dvelum\\App\\Frontend\\Articles\\Controller'
         ),
 ); 

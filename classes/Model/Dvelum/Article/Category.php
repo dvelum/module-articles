@@ -12,21 +12,21 @@ class Model_Dvelum_Article_Category extends Model
         if($list)
             return $list;
 
-        if($this->_cache){
+        if($this->cache){
             $cacheKey = $this->getCacheKey(['published']);
-            $list  = $this->_cache->load($cacheKey);
+            $list  = $this->cache->load($cacheKey);
 
             if(!empty($list))
                 return $list;
         }
 
-        $list = $this->getList(false,['published'=>true]);
+        $list = $this->query()->filters(['published'=>true])->fetchAll();
 
         if(!empty($list))
             $list = Utils::rekey('url', $list);
 
-        if($this->_cache)
-            $this->_cache->save($list , $cacheKey);
+        if($this->cache)
+            $this->cache->save($list , $cacheKey);
 
         return $list;
     }
@@ -36,9 +36,9 @@ class Model_Dvelum_Article_Category extends Model
      */
     public function resetPublishedCache()
     {
-        if(!$this->_cache)
+        if(!$this->cache)
             return;
 
-        $this->_cache->remove($this->getCacheKey(['published']));
+        $this->cache->remove($this->getCacheKey(['published']));
     }
 }

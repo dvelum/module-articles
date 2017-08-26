@@ -1,7 +1,7 @@
 <?php
 return [
-    'id' => 'dvelum_articles',
-    'version' => '1.0.7',
+    'id' => 'dvelum-module-articles',
+    'version' => '2.0.0',
     'author' => 'Kirill Yegorov',
     'name' => 'DVelum Articles',
     'configs' => './configs',
@@ -16,5 +16,5 @@ return [
         'dvelum_article',
         'dvelum_article_category',
     ],
-    'post-install'=>'Dvelum_Backend_Articles_Installer'
+    'post-install'=>'\\Dvelum\\Articles\\Installer'
 ];

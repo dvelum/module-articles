@@ -32,14 +32,14 @@ class Model_Dvelum_Article extends Model
 
         $data = false;
 
-        if($this->_cache){
-            $data = $this->_cache->load($cacheKey);
+        if($this->cache){
+            $data = $this->cache->load($cacheKey);
         }
 
         if($data !==false)
             return $data;
 
-        $sql = $this->_db->select()->from(
+        $sql = $this->dbSlave->select()->from(
                 $this->table(),
                 $this->topListFields
             )
@@ -50,18 +50,16 @@ class Model_Dvelum_Article extends Model
             ->order('date_published DESC')
             ->limit($count);
 
-        $data = $this->_db->fetchAll($sql);
+        $data = $this->dbSlave->fetchAll($sql);
 
-        if($this->_cache){
-            $this->_cache->save($data , $cacheKey);
+        if($this->cache){
+            $this->cache->save($data , $cacheKey);
             $list = [];
             if(!empty($data)){
                 $list = Utils::fetchCol('id', $data);
             }
             $this->saveRelationsCache($articleId , $list);
         }
-
-
         return $data;
     }
 
@@ -113,9 +111,9 @@ class Model_Dvelum_Article extends Model
     {
         $data = false;
 
-        if($this->_cache){
+        if($this->cache){
             $key = $this->getCacheKey(['articles_published', $category]);
-            $data = $this->_cache->load($key);
+            $data = $this->cache->load($key);
         }
 
         if(!empty($data)){
@@ -130,10 +128,10 @@ class Model_Dvelum_Article extends Model
             $filters['main_category']= $category;
         }
 
-        $count = $this->getCount($filters);
+        $count = $this->query()->filters($filters)->getCount();
 
-        if($this->_cache)
-            $this->_cache->save($count , $key);
+        if($this->cache)
+            $this->cache->save($count , $key);
 
         return $count;
     }
@@ -144,7 +142,7 @@ class Model_Dvelum_Article extends Model
      */
     public function resetRelatedCache($articleId)
     {
-        if(!$this->_cache)
+        if(!$this->cache)
             return;
 
         $cacheKey =  $this->getCacheKey([
@@ -152,7 +150,7 @@ class Model_Dvelum_Article extends Model
             $articleId,
         ]);
 
-        $this->_cache->remove($cacheKey);
+        $this->cache->remove($cacheKey);
     }
 
     /**
@@ -161,10 +159,10 @@ class Model_Dvelum_Article extends Model
      */
     public function resetTopCache($category)
     {
-        if(!$this->_cache)
+        if(!$this->cache)
             return;
 
-        $this->_cache->remove($this->getCacheKey(array('top_100', intval($category))));
+        $this->cache->remove($this->getCacheKey(array('top_100', intval($category))));
     }
 
     /**
@@ -173,9 +171,9 @@ class Model_Dvelum_Article extends Model
      */
     public function resetPublishedCount($category = false)
     {
-        if($this->_cache){
+        if($this->cache){
             $key = $this->getCacheKey(['articles_published', $category]);
-            $this->_cache->remove($key);
+            $this->cache->remove($key);
         }
     }
 
@@ -210,7 +208,7 @@ class Model_Dvelum_Article extends Model
         /*
          * Get from cache
          */
-        if($this->_cache && (($offset + $count) < 100)){
+        if($this->cache && (($offset + $count) < 100)){
             $data = array_slice($this->getTop100($categoryId, $imageSize), $offset , $count);
         }else{
             $data = $this->getList($pager , $filter, $this->topListFields);
@@ -231,9 +229,9 @@ class Model_Dvelum_Article extends Model
     {
         $data = false;
 
-        if($this->_cache){
+        if($this->cache){
             $hash = $this->getCacheKey(array('top_100' , intval($category)));
-            $data = $this->_cache->load($hash);
+            $data = $this->cache->load($hash);
         }
 
         if($data !==false){
@@ -259,8 +257,8 @@ class Model_Dvelum_Article extends Model
 
         $images = array();
 
-        if($this->_cache)
-            $this->_cache->save($data , $hash);
+        if($this->cache)
+            $this->cache->save($data , $hash);
 
         if(!empty($data)) {
             $data =  $this->addImagePaths($data, $imageSize, 'image');
@@ -276,13 +274,13 @@ class Model_Dvelum_Article extends Model
      */
     public function saveRelationsCache($articleId, array $relatedArticles)
     {
-        if(!$this->_cache)
+        if(!$this->cache)
             return;
 
         foreach($relatedArticles as $id)
         {
             $relationKey = $this->getCacheKey(['article_related_to',$id]);
-            $relations = $this->_cache->load($relationKey);
+            $relations = $this->cache->load($relationKey);
 
             if(empty($relations) || !is_array($relations))
                 $relations = [];
@@ -290,7 +288,7 @@ class Model_Dvelum_Article extends Model
             if(!in_array($articleId, $relations, true))
                 $relations[] = $articleId;
 
-            $this->_cache->save($relations, $relationKey);
+            $this->cache->save($relations, $relationKey);
         }
     }
 
@@ -300,11 +298,11 @@ class Model_Dvelum_Article extends Model
      */
     public function resetRelationsCache($articleId)
     {
-        if(!$this->_cache)
+        if(!$this->cache)
             return;
 
         $relationKey = $this->getCacheKey(['article_related_to',$articleId]);
-        $relations = $this->_cache->load($relationKey);
+        $relations = $this->cache->load($relationKey);
 
         if(!empty($relations)){
             foreach($relations as $id){
@@ -312,7 +310,7 @@ class Model_Dvelum_Article extends Model
                     'related_articles',
                     $id,
                 ]);
-                $this->_cache->remove($cacheKey);
+                $this->cache->remove($cacheKey);
             }
         }
     }

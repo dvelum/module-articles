@@ -1,8 +1,8 @@
 <?php return array (
-  'dvelum_articles' => 
+  'dvelum-module-articles' =>
   array (
-    'enabled' => true,
-    'installed' => true,
-    'path' => './modules/DVelum/Articles',
+    'enabled' => false,
+    'installed' => false,
+    'path' => './modules/dvelum/module-articles',
   ),
 ); 
