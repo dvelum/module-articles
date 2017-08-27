@@ -53,7 +53,7 @@ class Controller extends Api\Controller
     ];
 
     protected $canViewObjects = ['dvelum_article_category'];
-    protected $listLinks = ['category_title'=>'main_category'];
+    protected $listLinks = ['category_title'=>'main_category','user'=>'editor_id'];
 
     public function getModule(): string
     {

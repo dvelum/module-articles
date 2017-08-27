@@ -132,8 +132,7 @@ class Controller extends Frontend\Controller
         if (!empty($data['image'])) {
             $imgData = Model::factory('Medialib')->getCachedItem($data['image']);
             if (!empty($imgData)) {
-                $data['image'] = \Model_Medialib::getImgPath($imgData['path'], $imgData['ext'],
-                    $this->config->get('article_image_size'));
+                $data['image'] = \Model_Medialib::getImgPath($imgData['path'], $imgData['ext'], $this->config->get('article_image_size'));
                 //Open Graph property
                 $page->setOgProperty('image',
                     $scheme . $this->request->server('HTTP_HOST', 'string', '') . $data['image']);

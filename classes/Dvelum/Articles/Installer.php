@@ -222,7 +222,7 @@ class Installer extends \Externals_Installer
 
         $articleModel = Model::factory('Dvelum_Article');
         $categoryModel = Model::factory('Dvelum_Article_Category');
-        $catInfo = $categoryModel->getItemByUniqueField('url','test_category');
+        $catInfo = $categoryModel->getItemByField('url','test_category');
 
         if($articleModel->query()->filters(['url'=>'test_article'])->getCount())
             return true;
@@ -232,10 +232,10 @@ class Installer extends \Externals_Installer
             $article->setValues([
                 'url' => 'test_category',
                 'title' => $lang->get('test_article'),
-                'brief' => 'DVelum is a quick development platform based on ExtJS framework and PHP + MySQL on the server side. The platform opportunities allow to create a ready-to-go application in minutes without using complex XML configuration files, all settings being adjusted in visual interfaces. Automatically generated interfaces are easy to modify with the help of built-in layout designer.',
+                'brief' => 'DVelum is a quick development platform based on ExtJS framework and PHP + MySQL on the server side.',
                 'allow_comments' => true,
                 'main_category' => $catInfo['id'],
-                'text' => $lang->get('test_article').'...'
+                'text' => 'DVelum is a quick development platform based on ExtJS framework and PHP + MySQL on the server side. The platform opportunities allow to create a ready-to-go application in minutes without using complex XML configuration files, all settings being adjusted in visual interfaces. Automatically generated interfaces are easy to modify with the help of built-in layout designer.'
             ]);
             if(!$article->saveVersion(true, false))
                 throw new \Exception('Cannot add test article');
@@ -253,7 +253,7 @@ class Installer extends \Externals_Installer
      */
     protected function addBlocks()
     {
-        $articleBlock = Model::factory('Blocks')->query()->filters(['sys_name' => 'Block_Dvelum_Articles'])->getCount();
+        $articleBlock = Model::factory('Blocks')->query()->filters(['sys_name' => '\\Dvelum\\App\\Block\\Articles'])->getCount();
 
         if($articleBlock)
             return true;
@@ -264,7 +264,7 @@ class Installer extends \Externals_Installer
                 'is_menu' => false,
                 'is_system' => true,
                 'show_title' => true,
-                'sys_name' => 'Block_Dvelum_Articles',
+                'sys_name' => '\\Dvelum\\App\\Block\\Articles',
                 'title' => Lang::lang('dvelum_articles')->get('articles')
             ]);
 

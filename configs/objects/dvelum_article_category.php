@@ -1,5 +1,5 @@
 <?php return array (
-  'table' => 'articles_category',
+  'table' => 'dvelum_article_category',
   'engine' => 'InnoDB',
   'connection' => 'default',
   'rev_control' => true,

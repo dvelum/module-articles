@@ -15,11 +15,12 @@ echo '<div class="blockContent">';
 
 echo '<div class="dv_article block article">';
 
+$request = \Dvelum\Request::factory();
 
 foreach ($data as $article)
 {
 
-    $articleUrl = Request::url(array($itemUrl , $article['url']));
+    $articleUrl = $request->url(array($itemUrl , $article['url']));
 
 
     echo '<div class="item">';

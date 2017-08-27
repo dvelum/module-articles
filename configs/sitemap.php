@@ -1,4 +1,4 @@
 <?php
 return[
-    'articles' => 'Dvelum_Sitemap_Articles'
+    'articles' => '\\Dvelum\\Sitemap\\Adapter\\Articles'
 ];

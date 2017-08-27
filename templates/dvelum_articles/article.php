@@ -10,7 +10,6 @@ if(!empty($categoryInfo) && $categoryInfo['published']){
     $categoryLink = '<span class="categoryLink"><a href="'.$categoryInfo['url'].'">'.$categoryInfo['title'].'</a></span>';
 }
 
-
 ?>
 <div class="dv_article">
         <article class="article">
