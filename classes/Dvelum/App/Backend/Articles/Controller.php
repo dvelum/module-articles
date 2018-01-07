@@ -23,8 +23,8 @@ namespace Dvelum\App\Backend\Articles;
 use Dvelum\Config;
 use Dvelum\App\Router\RouterInterface;
 use Dvelum\Orm;
-use Dvelum\Orm\Object;
-use Dvelum\Orm\ObjectInterface;
+use Dvelum\Orm\Record as OrmRecord;
+use Dvelum\Orm\RecordInterface;
 use Dvelum\Orm\Model;
 use Dvelum\App\Backend\Api;
 use Dvelum\App\Controller\EventManager;
@@ -72,10 +72,10 @@ class Controller extends Api\Controller
 
     /**
      * Find staging URL
-     * @param ObjectInterface $object
+     * @param Orm\RecordInterface $object
      * @return string
      */
-    public function getStagingUrl(Orm\ObjectInterface $object) : string
+    public function getStagingUrl(Orm\RecordInterface $object) : string
     {
         $frontConfig = Config::storage()->get('frontend.php');
         $routerClass = '\\Dvelum\\App\\Router\\' . $frontConfig->get('router');
@@ -145,9 +145,9 @@ class Controller extends Api\Controller
 
         try{
             /**
-             * @var ObjectInterface $article
+             * @var RecordInterface $article
              */
-            $article = Object::factory('dvelum_article', $id);
+            $article = OrmRecord::factory('dvelum_article', $id);
         }catch (\Exception $e){
             $this->response->error($this->lang->get('WRONG_REQUEST'));
             return;
