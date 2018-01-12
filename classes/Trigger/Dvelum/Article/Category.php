@@ -1,19 +1,19 @@
 <?php
 class Trigger_Dvelum_Article_Category extends Trigger
 {
-    public function onAfterPublish(\Dvelum\Orm\ObjectInterface $object)
+    public function onAfterPublish(\Dvelum\Orm\RecordInterface $object)
     {
         parent::onAfterPublish($object);
         $this->clearTopCache($object);
     }
 
-    public function onAfterUnpublish(\Dvelum\Orm\ObjectInterface $object)
+    public function onAfterUnpublish(\Dvelum\Orm\RecordInterface $object)
     {
         parent::onAfterUnpublish($object);
         $this->clearTopCache($object);
     }
 
-    public function onAfterDelete(\Dvelum\Orm\ObjectInterface $object)
+    public function onAfterDelete(\Dvelum\Orm\RecordInterface $object)
     {
         parent::onAfterDelete($object);
         $this->clearTopCache($object);
