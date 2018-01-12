@@ -20,10 +20,10 @@ namespace Dvelum\App\Backend\Articles\Category;
 /**
  *  Articles UI controller
  */
-use Dvelum\App\Backend\Api;
+use Dvelum\App\Backend;
 
 
-class Controller extends Api\Controller
+class Controller extends Backend\Ui\Controller
 {
     protected $listFields = [
         "title",
