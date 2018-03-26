@@ -125,8 +125,8 @@ class Controller extends Frontend\Controller
         $pager->numPages = ceil($count / $this->config->get('list_count'));
 
         $page = \Page::getInstance();
-        $template = new View();
-        $template->setProperties([
+        $template = View::factory();
+        $template->setData([
             'articles' => $articles,
             'page' => $page,
             'pager' => $pager,
@@ -196,7 +196,7 @@ class Controller extends Frontend\Controller
             }unset($item);
         }
 
-        $template = new View();
+        $template = View::factory();
         $template->setData(array(
             'cat_list' => $categories,
             'articles' => $articles,

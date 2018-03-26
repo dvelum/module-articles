@@ -6,7 +6,7 @@ use Dvelum\Config\ConfigInterface;
 use Dvelum\App\Session\User;
 use Dvelum\Orm\Model;
 use Dvelum\Lang;
-use Dvelum\Orm\Object;
+use Dvelum\Orm\Record;
 
 class Installer extends \Externals_Installer
 {
@@ -58,7 +58,7 @@ class Installer extends \Externals_Installer
         foreach($pageItems as $item)
         {
             try{
-                $page = Object::factory('Page', $item['id']);
+                $page = Record::factory('Page', $item['id']);
                 $page->unpublish();
             }catch (\Exception $e){
                 $this->errors[] = $e->getMessage();
@@ -70,7 +70,7 @@ class Installer extends \Externals_Installer
         foreach($pageItems as $item)
         {
             try{
-                $page = Object::factory('Page', $item['id']);
+                $page = Record::factory('Page', $item['id']);
                 $page->unpublish();
             }catch (\Exception $e){
                 $this->errors[] = $e->getMessage();
@@ -95,7 +95,7 @@ class Installer extends \Externals_Installer
         if(empty($pageItem))
         {
             try{
-                $articlesPage = Object::factory('Page');
+                $articlesPage = Record::factory('Page');
                 $articlesPage->setValues([
                     'code'=>'articles',
                     'is_fixed'=>1,
@@ -142,7 +142,7 @@ class Installer extends \Externals_Installer
         if(empty($pageItem))
         {
             try{
-                $page = Object::factory('Page');
+                $page = Record::factory('Page');
                 $page->setValues(array(
                     'code'=>'article',
                     'is_fixed'=>1,
@@ -195,7 +195,7 @@ class Installer extends \Externals_Installer
             return true;
 
         try{
-            $category = Object::factory('Dvelum_Article_Category');
+            $category = Record::factory('Dvelum_Article_Category');
             $category->setValues([
                 'url' => 'test_category',
                 'title' => $lang->get('test_category')
@@ -228,7 +228,7 @@ class Installer extends \Externals_Installer
             return true;
 
         try{
-            $article = Object::factory('Dvelum_Article');
+            $article = Record::factory('Dvelum_Article');
             $article->setValues([
                 'url' => 'test_category',
                 'title' => $lang->get('test_article'),
@@ -259,7 +259,7 @@ class Installer extends \Externals_Installer
             return true;
 
         try{
-            $articleBlock = Object::factory('Blocks');
+            $articleBlock = Record::factory('Blocks');
             $articleBlock->setValues([
                 'is_menu' => false,
                 'is_system' => true,

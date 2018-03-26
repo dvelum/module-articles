@@ -163,7 +163,7 @@ class Controller extends Frontend\Controller
         }
 
         // Prepare template
-        $template = new View();
+        $template = View::factory();
         $template->setData([
             'page' => $page,
             'data' => $data,
@@ -180,7 +180,7 @@ class Controller extends Frontend\Controller
         $page->text .= $template->render('dvelum_articles/article.php');
 
         if (isset($data['allow_comments']) && $data['allow_comments'] && $this->config['comments_tpl']) {
-            $cTemplate = new View([
+            $cTemplate = View::factory([
                 'itemUrl' => $itemUrl,
                 'itemId' => $data['id']
             ]);

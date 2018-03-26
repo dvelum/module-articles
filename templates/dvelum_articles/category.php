@@ -8,7 +8,7 @@ $lang = $this->get('lang');
 
 
 
-$template = new Template();
+$template = \Dvelum\View::factory();
 $template->set('categories', $catList);
 $template->render('dvelum_articles/menu.php');
 $template->set('category_id' , $categoryInfo['id']);
