@@ -33,7 +33,7 @@ if(!empty($categoryInfo) && $categoryInfo['published']){
     <?php
     if(!empty($relatedArticles)){
 
-        $template = new Template();
+        $template = \Dvelum\View::factory();
         $template->disableCache();
         $template->set('lang', $this->get('lang'));
         $template->set('list', $relatedArticles);

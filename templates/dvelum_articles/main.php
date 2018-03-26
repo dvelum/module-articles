@@ -6,7 +6,7 @@ $categoryUrl  = $this->get('categoryUrl');
 $lang = $this->get('lang');
 
 
-$template = new Template();
+$template = \Dvelum\View::factory();
 $template->set('categories', $catList);
 $template->set('category_id' , false);
 

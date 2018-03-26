@@ -54,7 +54,7 @@ class Articles extends AbstractAdapter
         Lang::addDictionaryLoader('dvelum_articles', $appConfig->get('language').'/dvelum_articles.php');
         $data = Model::factory('Dvelum_Article')->getTop(false , $articlesConfig->get('block_count'), $articlesConfig->get('block_image_size'));
 
-        $tpl = new View();
+        $tpl = View::factory();
         $tpl->setData([
             'config' => $this->config,
             'place' => $this->config['place'],
