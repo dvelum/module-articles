@@ -19,6 +19,8 @@
 
 /*
  * Sitemap module adapter
+ */
+
 namespace Dvelum\Sitemap\Adapter;
 
 use Dvelum\Orm\Model;
@@ -65,4 +67,3 @@ class Articles extends AbstractAdapter
         return $xml;
     }
 }
-*/
