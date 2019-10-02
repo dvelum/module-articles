@@ -1,3 +1,6 @@
+[![Total Downloads](https://img.shields.io/packagist/dt/dvelum/module-articles.svg?style=flat-square)](https://packagist.org/packages/dvelum/module-articles)
+
+
 Articles module
 ======
 
