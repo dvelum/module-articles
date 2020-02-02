@@ -1,7 +1,7 @@
 <?php
 /**
  * DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- * Copyright (C) 2011-2017  Kirill Yegorov
+ * Copyright (C) 2011-2020  Kirill Yegorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,24 +18,27 @@
  */
 namespace  Dvelum\App\Frontend\Articles;
 
+use Dvelum\App\Model\Dvelum\Article;
 use Dvelum\Filter;
-use Dvelum\App\Frontend;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Page\Page;
+use Dvelum\Paginator;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Orm\Model;
 use Dvelum\Lang;
 use Dvelum\View;
+use Dvelum\App\Frontend\Cms;
 
-class Controller extends Frontend\Controller
+class Controller extends Cms\Controller
 {
     /**
      * @avr \Model_Dvelum_Article_Category $categoryModel
      */
     protected $categoryModel;
     /**
-     * @var \Model_Dvelum_Article $articleModel
+     * @var Article $articleModel
      */
     protected $articleModel;
     /**
@@ -118,13 +121,13 @@ class Controller extends Frontend\Controller
             $categories[$code] = $item;
         }
 
-        $pager = new \Paginator();
+        $pager = new Paginator();
         $pager->curPage = $page;
         $pager->numLinks = 5;
         $pager->pageLinkTpl = $this->request->url([$categoryUrl ,$category['url'] , '[page]']);
         $pager->numPages = ceil($count / $this->config->get('list_count'));
 
-        $page = \Page::getInstance();
+        $page = Page::factory();
         $template = View::factory();
         $template->setData([
             'articles' => $articles,
@@ -135,22 +138,22 @@ class Controller extends Frontend\Controller
             'date_format' => $this->config->get('date_format'),
         ]);
 
-
         $scheme = 'http://';
         if($this->request->isHttps()){
             $scheme = 'https://';
         }
 
-        $page->page_title = $category['title'];
-        $page->html_title = $category['title'];
-        $page->meta_keywords = $category['meta_keywords'];
-        $page->meta_description = $category['meta_description'];
+        $page->setTitle($category['title']);
+        $page->setHtmlTitle($category['title']);
+        $page->setMetaKeywords($category['meta_keywords']);
+        $page->setMetaDescription($category['meta_description']);
 
-        $page->setOgProperty('title', $category['title']);
-        $page->setOgProperty('url', $scheme . $this->request->server('HTTP_HOST', Filter::FILTER_STRING, '').$this->request->url([$categoryUrl, $category['url']]));
-        $page->setOgProperty('description', $category['meta_description']);
+        $openGrpaph = $page->openGraph();
+        $openGrpaph->setTitle($category['title']);
+        $openGrpaph->setUrl($scheme . $this->request->server('HTTP_HOST', Filter::FILTER_STRING, '').$this->request->url([$categoryUrl, $category['url']]));
+        $openGrpaph->setDescription($category['meta_description']);
 
-        $page->text = $template->render('dvelum_articles/category.php');
+        $page->setText($template->render('dvelum_articles/category.php'));
     }
 
     /**
@@ -175,7 +178,7 @@ class Controller extends Frontend\Controller
 
         $count = $this->articleModel->getPublishedCount();
 
-        $pager = new \Paginator();
+        $pager = new Paginator();
         $pager->curPage = $page;
         $pager->numLinks = 5;
         $pager->pageLinkTpl = $this->request->url([$categoryUrl ,'[page]']);
@@ -206,7 +209,9 @@ class Controller extends Frontend\Controller
             'date_format' => $this->config->get('date_format')
         ));
 
-        $page = \Page::getInstance();
-        $page->text.= $template->render('dvelum_articles/main.php');
+        $page = Page::factory();
+        $text = $page->getText();
+        $text.= $template->render('dvelum_articles/main.php');
+        $page->setText($text);
     }
 }

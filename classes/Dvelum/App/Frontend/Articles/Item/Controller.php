@@ -1,7 +1,7 @@
 <?php
 /**
- * DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- * Copyright (C) 2011-2017  Kirill Yegorov
+ * DVelum project https://github.com/dvelum/dvelum
+ * Copyright (C) 2011-2020  Kirill Yegorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,20 @@
 
 namespace Dvelum\App\Frontend\Articles\Item;
 
-use Dvelum\App\Frontend;
+use Dvelum\App\Model\Dvelum\Article;
+use Dvelum\App\Model\Medialib;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
+use Dvelum\Page\Page;
 use Dvelum\Request;
 use Dvelum\Response;
 use Dvelum\Lang;
 use Dvelum\Orm\Model;
 use Dvelum\App\Session\User;
 use Dvelum\View;
+use Dvelum\App\Frontend\Cms;
 
-class Controller extends Frontend\Controller
+class Controller extends Cms\Controller
 {
     /**
      * Articles config
@@ -65,7 +68,7 @@ class Controller extends Frontend\Controller
         }
 
         /**
-         * @var \Model_Dvelum_Article $articlesModel
+         * @var Article $articlesModel
          */
         $articlesModel = Model::factory('Dvelum_Article');
         $categoriesModel = Model::factory('Dvelum_Article_Category');
@@ -76,7 +79,7 @@ class Controller extends Frontend\Controller
             $data = $articlesModel->getCachedItemByField('url', $code);
         }
 
-        if ($vers && User::getInstance()->isAuthorized()) {
+        if ($vers && User::factory()->isAuthorized()) {
             $data = Model::factory('Vc')->getData('Dvelum_Article', $data['id'], $vers);
         } else {
             if (!empty($data) && !$data['published']) {
@@ -107,17 +110,18 @@ class Controller extends Frontend\Controller
             $data['date_published'] = date('Y-m-d H:i:s');
         }
 
-        $page = \Page::getInstance();
+        $page = Page::factory();
         $page->date_published = $data['date_published'];
-        $page->html_title = $data['title'];
-        $page->page_title = $data['title'];
-        $page->meta_keywords = $data['meta_keywords'];
-        $page->meta_description = $data['meta_description'];
+        $page->setHtmlTitle($data['title']);
+        $page->setTitle($data['title']);
+        $page->setMetaKeywords($data['meta_keywords']);
+        $page->setMetaDescription($data['meta_description']);
 
-        $page->setOgProperty('title', $data['title']);
-        $page->setOgProperty('url', $pageUrl);
-        $page->setOgProperty('description', $data['brief']);
-        $page->setOgProperty('type', 'article');
+        $openGraph = $page->openGraph();
+        $openGraph->setTitle($data['title']);
+        $openGraph->setUrl($pageUrl);
+        $openGraph->setDescription($data['brief']);
+
 
         // Get article main category
         $categoryInfo = $categoriesModel->getCachedItem($data['main_category']);
@@ -128,14 +132,17 @@ class Controller extends Frontend\Controller
             ]);
         }
 
+        /**
+         * @var Medialib $mediaModel
+         */
+        $mediaModel = Model::factory('Medialib');
         // Get article image url
         if (!empty($data['image'])) {
-            $imgData = Model::factory('Medialib')->getCachedItem($data['image']);
+            $imgData = $mediaModel->getCachedItem($data['image']);
             if (!empty($imgData)) {
-                $data['image'] = \Model_Medialib::getImgPath($imgData['path'], $imgData['ext'], $this->config->get('article_image_size'));
+                $data['image'] = $mediaModel->getImgPath($imgData['path'], $imgData['ext'], $this->config->get('article_image_size'));
                 //Open Graph property
-                $page->setOgProperty('image',
-                    $scheme . $this->request->server('HTTP_HOST', 'string', '') . $data['image']);
+                $openGraph->setImage($scheme . $this->request->server('HTTP_HOST', 'string', '') . $data['image']);
             } else {
                 $data['image'] = '';
             }
@@ -177,14 +184,15 @@ class Controller extends Frontend\Controller
         /*
          * Render article content
          */
-        $page->text .= $template->render('dvelum_articles/article.php');
-
+        $text = $page->getText();
+        $text.=$template->render('dvelum_articles/article.php');
         if (isset($data['allow_comments']) && $data['allow_comments'] && $this->config['comments_tpl']) {
             $cTemplate = View::factory([
                 'itemUrl' => $itemUrl,
                 'itemId' => $data['id']
             ]);
-            $page->text .= $cTemplate->render($this->config['comments_tpl']);
+            $text.= $cTemplate->render($this->config['comments_tpl']);
         }
+        $page->setText($text);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
- * DVelum project http://code.google.com/p/dvelum/ , https://github.com/k-samuel/dvelum , http://dvelum.net
- * Copyright (C) 2011-2017  Kirill Yegorov
+ * DVelum project https://github.com/dvelum/dvelum
+ * Copyright (C) 2011-2020  Kirill Yegorov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 namespace Dvelum\App\Backend\Articles;
 /**
  *  Articles UI controller
  */
+
+use Dvelum\App\Model\Medialib;
 use Dvelum\Config;
 use Dvelum\App\Router\RouterInterface;
 use Dvelum\Orm;
@@ -68,6 +71,16 @@ class Controller extends Api\Controller
     public function initListeners()
     {
         $this->eventManager->on(EventManager::AFTER_LIST, [$this, 'prepareList']);
+    }
+
+    public function indexAction()
+    {
+        parent::indexAction();
+        /**
+         * @var Medialib $mediaModel
+         */
+        $mediaModel = Model::factory('Medialib');
+        $mediaModel->includeScripts($this->resource);
     }
 
     /**

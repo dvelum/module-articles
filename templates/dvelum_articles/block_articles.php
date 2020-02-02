@@ -1,6 +1,6 @@
 <?php
 $data = $this->get('data');
-$router = new Router_Module();
+$router = new \Dvelum\App\Router\Cms();
 $config = $this->get('config');
 $lang = $this->get('lang');
 
@@ -43,7 +43,7 @@ foreach ($data as $article)
 }
 echo '
    <div class="showMore">
-        <a href="'.Request::url(array('articles')).'">'.$lang->get('more_articles').'</a>
+        <a href="'.$request->url(array('articles')).'">'.$lang->get('more_articles').'</a>
     </div>
     <div class="clear"></div>
 ';

@@ -1,6 +1,7 @@
 <?php
 namespace Dvelum\Articles;
 
+use Dvelum\App\Model\Permissions;
 use Dvelum\Config;
 use Dvelum\Config\ConfigInterface;
 use Dvelum\App\Session\User;
@@ -8,15 +9,15 @@ use Dvelum\Orm\Model;
 use Dvelum\Lang;
 use Dvelum\Orm\Record;
 
-class Installer extends \Externals_Installer
+class Installer extends \Dvelum\Externals\Installer
 {
     /**
      * Install
      * @param ConfigInterface $applicationConfig
      * @param ConfigInterface $moduleConfig
-     * @return boolean
+     * @return bool
      */
-    public function install(ConfigInterface $applicationConfig, ConfigInterface $moduleConfig)
+    public function install(ConfigInterface $applicationConfig, ConfigInterface $moduleConfig) : bool
     {
         Lang::addDictionaryLoader('dvelum_articles', $applicationConfig->get('language').'/dvelum_articles.php', Config\Factory::File_Array);
 
@@ -26,9 +27,9 @@ class Installer extends \Externals_Installer
         }
 
         // Add permissions
-        $userInfo = User::getInstance()->getInfo();
+        $userInfo = User::factory()->getInfo();
         /**
-         * @var \Model_Permissions $permissionsModel
+         * @var Permissions $permissionsModel
          */
         $permissionsModel = Model::factory('Permissions');
         if(!$permissionsModel->setGroupPermissions($userInfo['group_id'], 'Dvelum_Articles' , 1 , 1 , 1 , 1)){
@@ -48,9 +49,9 @@ class Installer extends \Externals_Installer
      * Uninstall
      * @param ConfigInterface $applicationConfig
      * @param ConfigInterface $moduleConfig
-     * @return boolean
+     * @return bool
      */
-    public function uninstall(ConfigInterface $applicationConfig, ConfigInterface $moduleConfig)
+    public function uninstall(ConfigInterface $applicationConfig, ConfigInterface $moduleConfig) : bool
     {
         $pagesModel = Model::factory('Page');
         $pageItems = $pagesModel->query()->filters(['func_code' => 'dvelum_articles'])->fetchAll();
@@ -84,9 +85,9 @@ class Installer extends \Externals_Installer
      * @return bool
      * @throws \Exception
      */
-    protected function addPages()
+    protected function addPages() : bool
     {
-        $userId = User::getInstance()->getId();
+        $userId = User::factory()->getId();
         $lang = Lang::lang('dvelum_articles');
 
         $pagesModel = Model::factory('Page');
@@ -122,7 +123,7 @@ class Installer extends \Externals_Installer
                     'default_blocks'=>true
                 ]);
 
-                if(!$articlesPage->saveVersion(true, false))
+                if(!$articlesPage->saveVersion())
                     throw new \Exception('Cannot create articles page');
 
                 if(!$articlesPage->publish())
@@ -169,7 +170,7 @@ class Installer extends \Externals_Installer
                     'default_blocks'=>true
                 ));
 
-                if(!$page->saveVersion(true, false))
+                if(!$page->saveVersion())
                     throw new \Exception('Cannot create article page');
 
                 if(!$page->publish())
@@ -200,7 +201,7 @@ class Installer extends \Externals_Installer
                 'url' => 'test_category',
                 'title' => $lang->get('test_category')
             ]);
-            if(!$category->saveVersion(true, false))
+            if(!$category->saveVersion())
                 throw new \Exception('Cannot add test category');
 
             if(!$category->publish())
@@ -237,7 +238,7 @@ class Installer extends \Externals_Installer
                 'main_category' => $catInfo['id'],
                 'text' => 'DVelum is a quick development platform based on ExtJS framework and PHP + MySQL on the server side. The platform opportunities allow to create a ready-to-go application in minutes without using complex XML configuration files, all settings being adjusted in visual interfaces. Automatically generated interfaces are easy to modify with the help of built-in layout designer.'
             ]);
-            if(!$article->saveVersion(true, false))
+            if(!$article->saveVersion())
                 throw new \Exception('Cannot add test article');
             if(!$article->publish())
                 throw new \Exception('Cannot publish test article');
@@ -268,7 +269,7 @@ class Installer extends \Externals_Installer
                 'title' => Lang::lang('dvelum_articles')->get('articles')
             ]);
 
-            if(!$articleBlock->saveVersion(true, false))
+            if(!$articleBlock->saveVersion())
                 throw new \Exception('Cannot create article block');
 
             if(!$articleBlock->publish())

@@ -1,6 +1,6 @@
 <?php
 $articles = $this->get('articles');
-$catList = Utils::rekey('id', $this->get('cat_list'));
+$catList = Dvelum\Utils::rekey('id', $this->get('cat_list'));
 $itemUrl = $this->get('itemUrl');
 $categoryInfo = $this->get('category');
 $categoryUrl  = $this->get('categoryUrl');

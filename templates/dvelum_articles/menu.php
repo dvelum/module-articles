@@ -11,5 +11,4 @@ foreach ($catList as $cat){
     }
     echo '<li><a class="category' . $cls . '" href="' . $cat['url'] . '">' . $cat['title'] . '</a></li>';
 }
-
 echo '</ul>';

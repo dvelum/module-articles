@@ -1,6 +1,9 @@
 <?php
 $data = $this->get('data');
 $relatedArticles = $this->get('related_articles');
+/**
+ * @var \Dvelum\Page\Page $page
+ */
 $page = $this->get('page');
 
 $categoryInfo = $this->get('category_info');
@@ -13,7 +16,6 @@ if(!empty($categoryInfo) && $categoryInfo['published']){
 ?>
 <div class="dv_article">
         <article class="article">
-            <h1><?php echo $page->page_title;?></h1>
             <div>
                 <span class="date"><?php echo date($this->get('date_format'), strtotime($data['date_published']))?></span>
                 <?php echo $categoryLink;?>

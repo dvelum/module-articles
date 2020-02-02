@@ -55,7 +55,7 @@
       'unique' => 'url',
       'db_isNull' => false,
       'required' => true,
-      'validator' => 'Validator_Pagecode',
+      'validator' => '\\Dvelum\\Validator\\Pagecode',
       'db_type' => 'varchar',
       'db_default' => '',
       'db_len' => 255,

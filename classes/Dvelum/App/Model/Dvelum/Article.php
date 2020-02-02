@@ -1,5 +1,31 @@
 <?php
-class Model_Dvelum_Article extends Model
+/**
+ *  DVelum project https://github.com/dvelum/dvelum , https://github.com/k-samuel/dvelum , http://dvelum.net
+ *  Copyright (C) 2011-2020  Kirill Yegorov
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+declare(strict_types=1);
+
+namespace Dvelum\App\Model\Dvelum;
+
+use Dvelum\App\Model\Medialib;
+use Dvelum\Orm\Model;
+use Dvelum\Utils;
+
+class Article extends Model
 {
     /**
      * Article fields for lists
@@ -23,7 +49,7 @@ class Model_Dvelum_Article extends Model
      * @param integer $count
      * @return array
      */
-    public function getRelated($articleId, $categoryId, $dataPublished, $count)
+    public function getRelated($articleId, $categoryId, $dataPublished, $count) : array
     {
         $cacheKey =  $this->getCacheKey([
             'related_articles',
@@ -70,7 +96,7 @@ class Model_Dvelum_Article extends Model
      * @param string $key - array key for image path
      * @return array
      */
-    public function addImagePaths($data, $imageSize, $key = 'image')
+    public function addImagePaths($data, $imageSize, $key = 'image') : array
     {
         if(empty($data)){
             return [];
@@ -91,7 +117,7 @@ class Model_Dvelum_Article extends Model
                 {
                     if(!empty($v['image']) && isset($images[$v['image']])){
                         $img = $images[$v['image']];
-                        $v[$key] = Model_Medialib::getImgPath($img['path'], $img['ext'], $imageSize, true);
+                        $v[$key] = $mediaModel->getImgPath($img['path'], $img['ext'], $imageSize, true);
                     }else{
                         $v[$key] = '';
                     }
@@ -211,7 +237,7 @@ class Model_Dvelum_Article extends Model
         if($this->cache && (($offset + $count) < 100)){
             $data = array_slice($this->getTop100($categoryId, $imageSize), $offset , $count);
         }else{
-            $data = $this->getList($pager , $filter, $this->topListFields);
+            $data = $this->query()->params($pager)->filters($filter)->fields($this->topListFields)->fetchAll();
             if(!empty($data)) {
                 $data = $this->addImagePaths($data, $imageSize, 'image');
             }
@@ -253,9 +279,7 @@ class Model_Dvelum_Article extends Model
         if($category)
             $filter['main_category'] = $category;
 
-        $data = $this->getList($pager , $filter, $this->topListFields);
-
-        $images = array();
+        $data = $this->query()->params($pager)->filters($filter)->fields($this->topListFields)->fetchAll();
 
         if($this->cache)
             $this->cache->save($data , $hash);
