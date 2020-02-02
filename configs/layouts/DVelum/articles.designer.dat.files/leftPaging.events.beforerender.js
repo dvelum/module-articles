@@ -1,0 +1,1 @@
+cmp.bindStore(me.childObjects.draftView.getStore());

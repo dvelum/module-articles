@@ -1,0 +1,1 @@
+this.fireEvent('editCall' , record);

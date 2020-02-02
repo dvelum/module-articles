@@ -1,0 +1,1 @@
+this.setViewFilter('filter[main_category]', records.get('id'));

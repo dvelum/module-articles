@@ -1,0 +1,1 @@
+this.showEditWindow(grid.getStore().getAt(rowIndex).get('id'));
