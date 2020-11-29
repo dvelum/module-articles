@@ -1,6 +1,6 @@
 {
   "name": "dvelum/module-articles",
-  "version": "3.0.0-dev",
+  "version": "3.0.1-dev",
   "type": "dvelum3-module",
   "description": "Articles module for DVelum",
   "keywords": ["dvelum","articles"],
@@ -19,7 +19,7 @@
   },
   "require": {
     "php":">=7.3",
-    "oomphinc/composer-installers-extender": "^1.1",
+    "oomphinc/composer-installers-extender": "^2.0",
     "dvelum/dvelum": ">=3.0.0",
     "dvelum/module-cms": ">=3.0.0"
   }
