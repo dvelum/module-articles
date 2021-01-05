@@ -1,6 +1,6 @@
 {
   "name": "dvelum/module-articles",
-  "version": "3.0.1-dev",
+  "version": "3.0.3",
   "type": "dvelum3-module",
   "description": "Articles module for DVelum",
   "keywords": ["dvelum","articles"],
