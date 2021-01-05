@@ -78,6 +78,7 @@ class Installer extends \Dvelum\Externals\Installer
                 return false;
             }
         }
+        return true;
     }
 
     /**
